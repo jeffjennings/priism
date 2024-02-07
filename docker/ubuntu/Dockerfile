@@ -4,6 +4,8 @@ FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y \
+    sudo \
+    wget \
     cmake \
     g++ \
     libfftw3-bin \
@@ -17,10 +19,12 @@ RUN apt-get update && \
 
 # create user for running PRIISM
 ENV USERNAME anonymous
-RUN groupadd -r ${USERNAME} && useradd -m -g ${USERNAME} ${USERNAME}
+RUN groupadd -r ${USERNAME} && useradd -m -g ${USERNAME} ${USERNAME} && echo "anonymous:1234" | chpasswd
+RUN adduser anonymous sudo
 
 # run the following commands as anonymous
 USER ${USERNAME}:${USERNAME}
+CMD /bin/bash
 
 # working directory is home directory
 ENV HOME /home/${USERNAME}
