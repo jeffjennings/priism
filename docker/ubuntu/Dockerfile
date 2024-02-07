@@ -18,20 +18,17 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # create user for running PRIISM
-ENV USERNAME anonymous
-RUN groupadd -r ${USERNAME} && useradd -m -g ${USERNAME} ${USERNAME} && echo "anonymous:1234" | chpasswd
-RUN adduser anonymous sudo
+RUN echo "root:root" | chpasswd
 
 # run the following commands as anonymous
-USER ${USERNAME}:${USERNAME}
 CMD /bin/bash
 
 # working directory is home directory
-ENV HOME /home/${USERNAME}
+ENV HOME /home/
 WORKDIR ${HOME}
 
 # upgrade pip
-RUN python3 -m pip install --user --upgrade --no-cache-dir pip
+RUN python3 -m pip install --upgrade --no-cache-dir pip
 
 # download priism
 RUN python3 -c "import io, urllib.request as request, zipfile ; req = request.urlopen('https://github.com/jeffjennings/priism/archive/refs/heads/docker_tweaks.zip') ; f=io.BytesIO(req.read()) ; zf = zipfile.ZipFile(f, mode='r') ; zf.extractall() ; zf.close()" \
@@ -41,13 +38,13 @@ RUN python3 -c "import io, urllib.request as request, zipfile ; req = request.ur
 WORKDIR ${HOME}/priism
 
 # install python dependencies for PRIISM
-RUN python3 -m pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
+RUN python3 -m pip install --no-cache-dir --no-warn-script-location -r requirements.txt
 
 # build & install PRIISM
-RUN python3 setup.py build && python3 setup.py install --user
+RUN python3 setup.py build && python3 setup.py install
 
 # install Jupyter and astropy
-RUN python3 -m pip install --user --no-cache-dir --no-warn-script-location jupyter astropy
+RUN python3 -m pip install --no-cache-dir --no-warn-script-location jupyter astropy
 ENV PATH ${HOME}/.local/bin:${PATH}
 
 # go back to home directory
