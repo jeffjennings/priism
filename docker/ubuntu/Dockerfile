@@ -35,7 +35,7 @@ RUN python3 -m pip install --user --upgrade --no-cache-dir pip
 
 # download priism
 RUN python3 -c "import io, urllib.request as request, zipfile ; req = request.urlopen('https://github.com/jeffjennings/priism/archive/refs/heads/docker_tweaks.zip') ; f=io.BytesIO(req.read()) ; zf = zipfile.ZipFile(f, mode='r') ; zf.extractall() ; zf.close()" \
-    && mv priism-main priism
+    && mv priism-docker_tweaks priism
 
 # change directory
 WORKDIR ${HOME}/priism
